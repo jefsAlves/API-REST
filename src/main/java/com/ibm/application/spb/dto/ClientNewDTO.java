@@ -22,6 +22,9 @@ public class ClientNewDTO implements Serializable {
 	private String email;
 
 	@NotEmpty(message = "Mandatory Filling")
+	private String password;
+
+	@NotEmpty(message = "Mandatory Filling")
 	private String sourceSecurity;
 
 	private Integer customerType;
@@ -63,6 +66,14 @@ public class ClientNewDTO implements Serializable {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public String getSourceSecurity() {

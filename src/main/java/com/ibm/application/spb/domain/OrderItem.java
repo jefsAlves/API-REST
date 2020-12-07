@@ -94,7 +94,14 @@ public class OrderItem implements Serializable {
 
 	@Override
 	public String toString() {
-		return "OrderItem [orderItemPk=" + id + ", discount=" + discount + ", quantity=" + quantity + ", price=" + price
-				+ "]";
+		StringBuilder builder = new StringBuilder();
+		builder.append(getProduct().getName());
+		builder.append(", Quantity: ");
+		builder.append(quantity);
+		builder.append(", Price: R$ ");
+		builder.append(price);
+		builder.append(" SubTotal: ");
+		builder.append(getSubTotal());
+		return builder.toString();
 	}
 }

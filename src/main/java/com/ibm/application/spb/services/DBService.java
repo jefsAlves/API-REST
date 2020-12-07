@@ -1,9 +1,11 @@
 package com.ibm.application.spb.services;
 
-import java.time.Instant;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ibm.application.spb.domain.Adress;
@@ -18,12 +20,13 @@ import com.ibm.application.spb.domain.PaymentWithInvoice;
 import com.ibm.application.spb.domain.Product;
 import com.ibm.application.spb.domain.State;
 import com.ibm.application.spb.domain.enums.CustomerType;
+import com.ibm.application.spb.domain.enums.Profiles;
 import com.ibm.application.spb.domain.enums.StatusPayment;
 import com.ibm.application.spb.repositories.AdressRepository;
 import com.ibm.application.spb.repositories.CategoryRepository;
 import com.ibm.application.spb.repositories.CityRepository;
 import com.ibm.application.spb.repositories.ClientRepository;
-import com.ibm.application.spb.repositories.OrderITemRepository;
+import com.ibm.application.spb.repositories.OrderItemRepository;
 import com.ibm.application.spb.repositories.OrderRepository;
 import com.ibm.application.spb.repositories.PaymentRepository;
 import com.ibm.application.spb.repositories.ProductRepository;
@@ -57,9 +60,14 @@ public class DBService {
 	private PaymentRepository paymentRepository;
 
 	@Autowired
-	private OrderITemRepository orderItem;
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-	public void instantiateDataBase() {
+	@Autowired
+	private OrderItemRepository orderItem;
+
+	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy/dd/MM HH:mm:ss");
+
+	public void instantiateDataBase() throws ParseException {
 
 		Category cat1 = new Category(null, "Eletronics");
 		Category cat2 = new Category(null, "Computing");
@@ -103,8 +111,7 @@ public class DBService {
 
 		categoryRepository.saveAll(Arrays.asList(cat1, cat2, cat3, cat4, cat5, cat6, cat7));
 
-		productRepository
-				.saveAll(Arrays.asList(prod1, prod2, prod3, prod4, prod5, prod6, prod7, prod8, prod9, prod10, prod11));
+		productRepository.saveAll(Arrays.asList(prod1, prod2, prod3, prod4, prod5, prod6, prod7, prod8, prod9, prod10, prod11));
 
 		State s1 = new State(null, "Minas Gerais");
 		State s2 = new State(null, "São Paulo");
@@ -120,24 +127,29 @@ public class DBService {
 
 		cityRepository.saveAll(Arrays.asList(c1, c2, c3));
 
-		Client cli1 = new Client(null, "Maria silva", "maria@gmail.com", "36378912377", CustomerType.PHYSICAL_PERSON);
+		Client cli1 = new Client(null, "Maria silva", "jeff98alves@gmail.com", bCryptPasswordEncoder.encode("1234567"), "36378912377", CustomerType.PHYSICAL_PERSON);
+		cli1.getPhones().addAll(Arrays.asList("27363323", "938383935"));
 
-		cli1.getPhones().addAll(Arrays.asList("27363323", "93838393"));
+		Client cli2 = new Client(null, "João Silva", "jeffersonalmeida16@gmail.com", bCryptPasswordEncoder.encode("H3243254d#"), "35496494322", CustomerType.LEGAL_PERSON);
+		cli2.getPhones().addAll(Arrays.asList("43843995", "954654332"));
+		cli2.addProfile(Profiles.ADM);
+		
 
 		Adress a1 = new Adress(null, "Rua Flores", 300, "Apto 203", "Jardim", 38220834, cli1, c1);
 		Adress a2 = new Adress(null, "Avenida Matos", 105, "Sala 800", "Centro", 38777012, cli1, c2);
+		Adress a3 = new Adress(null, "Avenida Floriano", 105, null, "Centro", 9435403, cli2, c2);
 
 		cli1.getAdresses().addAll(Arrays.asList(a1, a2));
+		cli2.getAdresses().addAll(Arrays.asList(a3));
 
-		clientRepository.saveAll(Arrays.asList(cli1));
-		adressRepository.saveAll(Arrays.asList(a1, a2));
+		clientRepository.saveAll(Arrays.asList(cli1, cli2));
+		adressRepository.saveAll(Arrays.asList(a1, a2, a3));
 
-		Order o1 = new Order(null, Instant.parse("2017-09-30T10:32:00Z"), cli1, a1);
-		Order o2 = new Order(null, Instant.parse("2017-10-10T19:35:00Z"), cli1, a2);
+		Order o1 = new Order(null, sdf.parse("2017/09/30 10:32:00"), cli1, a1);
+		Order o2 = new Order(null, sdf.parse("2017/10/10 19:35:00"), cli1, a2);
 
 		Payment p1 = new PaymentWithCard(null, StatusPayment.PAID, o1, 6);
-		Payment p2 = new PaymentWithInvoice(null, StatusPayment.PEDING, o2, Instant.parse("2017-10-20T22:00:00Z"),
-				null);
+		Payment p2 = new PaymentWithInvoice(null, StatusPayment.PEDING, o2, sdf.parse("2017/10/20 22:00:00"), null);
 
 		o1.setPayment(p1);
 		o2.setPayment(p2);
@@ -155,6 +167,5 @@ public class DBService {
 		o2.getOrderItems().addAll(Arrays.asList(oi3));
 
 		orderItem.saveAll(Arrays.asList(oi1, oi2, oi3));
-
 	}
 }

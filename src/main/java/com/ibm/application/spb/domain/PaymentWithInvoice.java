@@ -1,6 +1,6 @@
 package com.ibm.application.spb.domain;
 
-import java.time.Instant;
+import java.util.Date;
 
 import javax.persistence.Entity;
 
@@ -12,31 +12,31 @@ import com.ibm.application.spb.domain.enums.StatusPayment;
 public class PaymentWithInvoice extends Payment {
 	private static final long serialVersionUID = 1L;
 
-	private Instant dueDate;
-	private Instant perDay;
+	private Date dueDate;
+	private Date perDay;
 
 	public PaymentWithInvoice() {
 	}
 
-	public PaymentWithInvoice(Long id, StatusPayment status, Order order, Instant dueDate, Instant perDay) {
+	public PaymentWithInvoice(Long id, StatusPayment status, Order order, Date dueDate, Date perDay) {
 		super(id, status, order);
 		this.dueDate = dueDate;
 		this.perDay = perDay;
 	}
 
-	public Instant getDueDate() {
+	public Date getDueDate() {
 		return dueDate;
 	}
 
-	public void setDueDate(Instant dueDate) {
+	public void setDueDate(Date dueDate) {
 		this.dueDate = dueDate;
 	}
 
-	public Instant getPerDay() {
+	public Date getPerDay() {
 		return perDay;
 	}
 
-	public void setPerDay(Instant perDay) {
+	public void setPerDay(Date perDay) {
 		this.perDay = perDay;
 	}
 

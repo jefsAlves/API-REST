@@ -1,5 +1,7 @@
 package com.ibm.application.spb.config;
 
+import java.text.ParseException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -7,6 +9,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import com.ibm.application.spb.services.DBService;
+import com.ibm.application.spb.services.EmailService;
+import com.ibm.application.spb.services.SmtpEmailService;
 
 @Configuration
 @Profile("dev")
@@ -19,7 +23,7 @@ public class DevConfig {
 	private String strategy;
 
 	@Bean
-	public boolean instantiateDataBase() {
+	public boolean instantiateDataBase() throws ParseException {
 
 		if (!"create".equals(strategy)) {
 			return false;
@@ -28,5 +32,10 @@ public class DevConfig {
 		db.instantiateDataBase();
 
 		return true;
+	}
+
+	@Bean
+	public EmailService instantiateSmtpEmailService() {
+		return new SmtpEmailService();
 	}
 }

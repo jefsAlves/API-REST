@@ -2,18 +2,24 @@ package com.ibm.application.spb.domain.enums;
 
 public enum StatusPayment {
 
-	PEDING(1), 
-	CANCELED(2),
-	PAID(3);
+	PEDING(1, "PENDING"), 
+	CANCELED(2, "CANCELED"),
+	PAID(3, "PAID");
 
 	private Integer code;
+	private String description;
 
-	private StatusPayment(Integer code) {
+	private StatusPayment(Integer code, String description) {
 		this.code = code;
+		this.description = description;
 	}
 
 	public Integer getCode() {
 		return code;
+	}
+
+	public String getDescription() {
+		return description;
 	}
 
 	public void setCode(Integer code) {
@@ -34,5 +40,4 @@ public enum StatusPayment {
 
 		throw new IllegalArgumentException("Code Invalid! " + cod);
 	}
-
 }

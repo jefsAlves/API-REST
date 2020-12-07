@@ -6,12 +6,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -20,6 +22,7 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ibm.application.spb.domain.enums.CustomerType;
+import com.ibm.application.spb.domain.enums.Profiles;
 
 @Entity
 @Table(name = "TB_CLIENT")
@@ -30,10 +33,13 @@ public class Client implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String name;
-	
+
 	@Column(unique = true)
 	private String email;
-	
+
+	@JsonIgnore
+	private String password;
+
 	private String sourceSecurity;
 
 	private Integer customerType;
@@ -42,22 +48,30 @@ public class Client implements Serializable {
 	List<Adress> adresses = new ArrayList<>();
 
 	@ElementCollection
-	@CollectionTable(name = "phone")
+	@CollectionTable(name = "TB_PHONE")
 	Set<String> phones = new HashSet<>();
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "TB_PROFILES")
+	private Set<Integer> profiles = new HashSet<>();
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "client")
 	List<Order> orders = new ArrayList<>();
 
 	public Client() {
+		addProfile(Profiles.CLIENT);
 	}
 
-	public Client(Long id, String name, String email, String sourceSecurity, CustomerType customerType) {
+	public Client(Long id, String name, String email, String password, String sourceSecurity,
+			CustomerType customerType) {
 		this.id = id;
 		this.name = name;
 		this.email = email;
+		this.password = password;
 		this.sourceSecurity = sourceSecurity;
 		this.customerType = (customerType == null) ? null : customerType.getCode();
+		addProfile(Profiles.CLIENT);
 	}
 
 	public Long getId() {
@@ -84,6 +98,14 @@ public class Client implements Serializable {
 		this.email = email;
 	}
 
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
 	public String getSourceSecurity() {
 		return sourceSecurity;
 	}
@@ -106,6 +128,14 @@ public class Client implements Serializable {
 
 	public Set<String> getPhones() {
 		return phones;
+	}
+
+	public Set<Profiles> getProfiles() {
+		return profiles.stream().map(x -> Profiles.toEnum(x)).collect(Collectors.toSet());
+	}
+
+	public void addProfile(Profiles profile) {
+		profiles.add(profile.getCode());
 	}
 
 	public List<Order> getOrders() {

@@ -1,7 +1,7 @@
 package com.ibm.application.spb.domain;
 
 import java.io.Serializable;
-import java.time.Instant;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -25,7 +25,7 @@ public class Order implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private Instant moment;
+	private Date moment;
 
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = "order")
 	private Payment payment;
@@ -44,7 +44,7 @@ public class Order implements Serializable {
 	public Order() {
 	}
 
-	public Order(Long id, Instant moment, Client client, Adress adress) {
+	public Order(Long id, Date moment, Client client, Adress adress) {
 		this.id = id;
 		this.moment = moment;
 		this.client = client;
@@ -59,11 +59,11 @@ public class Order implements Serializable {
 		this.id = id;
 	}
 
-	public Instant getMoment() {
+	public Date getMoment() {
 		return moment;
 	}
 
-	public void setMoment(Instant moment) {
+	public void setMoment(Date moment) {
 		this.moment = moment;
 	}
 
@@ -123,6 +123,26 @@ public class Order implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Order [id=" + id + ", moment=" + moment + "]";
+		StringBuilder builder = new StringBuilder();
+
+		builder.append("Order Number: ");
+		builder.append(id);
+		builder.append("Date: ");
+		builder.append(moment);
+		builder.append("Name: ");
+		builder.append(client);
+		builder.append(getClient().getName());
+		builder.append("Order Status: ");
+		builder.append(getPayment().getStatus().getDescription());
+		builder.append("/nDetails");
+		
+		for(OrderItem oi : getOrderItems()){
+			builder.append(oi.toString());
+		}
+		
+		builder.append("Total Payment: ");
+		builder.append(getTotal());
+		
+		return builder.toString();
 	}
 }

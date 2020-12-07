@@ -17,9 +17,9 @@ public enum CustomerType {
 	public Integer getCode() {
 		return code;
 	}
-
+		
 	public static CustomerType toEnum(Integer code) {
-
+		
 		if (code == null) {
 			return null;
 		}
